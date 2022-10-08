@@ -9,6 +9,7 @@ var otaTimerVar =  null;
  */
 $(document).ready(function(){
 	getUpdateStatus();
+	StartJoyStickInterval();
 });   
 
 /**
@@ -114,6 +115,26 @@ function otaRebootTimer()
 	{
         otaTimerVar = setTimeout(otaRebootTimer, 1000);
     }
+}
+
+/**
+ * Gets Joystick x and y coordinates values for display on the web page
+ * 
+ */
+function getCoordinatesValues()
+{
+	$.getJSON('/JoyStick.json',function(data){
+		$("#x_coordinate").text(data["x_axis"]);
+		$("#y_coordinate").text(data["y_axis"]);
+	})
+}
+
+/**
+ * Sets the interval for getting the updated Joy Stick values.
+ */
+function StartJoyStickInterval()
+{
+	setInterval(getCoordinatesValues,5000);
 }
 
 

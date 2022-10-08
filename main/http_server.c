@@ -10,6 +10,7 @@
 #include "esp_ota_ops.h"
 #include "sys/param.h"
 
+#include "JoyStick.h"
 #include "http_server.h"
 #include "tasks_common.h"
 #include "wifi_app.h"
@@ -310,6 +311,23 @@ esp_err_t http_server_OTA_status_handler(httpd_req_t *req)
 	return ESP_OK;
 }
 
+/**
+ * JoyStick readings JSON handler responds with Joystick xy-data
+ * @param req HTTP request for which the uri needs to be handled
+ * @return ESP_OK
+ */
+static esp_err_t http_server_JoyStick_readings_json_handler(httpd_req_t *req)
+{
+	ESP_LOGI(TAG, "/JoyStick.json requested");
+
+	char JoyStickJSON[100];
+	sprintf(JoyStickJSON, "{\"x_axis\":\"%d\",\"y_axis\":\"%d\"}", getXcoordinate(), getYcoordinate());
+
+	httpd_resp_set_type(req,"application/json");
+	httpd_resp_send(req,JoyStickJSON,strlen(JoyStickJSON));
+
+	return ESP_OK;
+}
 
 /**
  * Sets up the default httpd server configuration.
@@ -414,6 +432,15 @@ static httpd_handle_t http_server_configure(void)
 				.user_ctx = NULL
 		};
 		httpd_register_uri_handler(http_server_handle, &OTA_status);
+
+		//register JoyStick .json handler
+		httpd_uri_t Joy_Stick_json = {
+				.uri = "/JoyStick.json",
+				.method = HTTP_GET,
+				.handler = http_server_JoyStick_readings_json_handler,
+				.user_ctx = NULL,
+		};
+		httpd_register_uri_handler(http_server_handle,&Joy_Stick_json);
 
 		return http_server_handle;
 	}
