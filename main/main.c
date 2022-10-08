@@ -3,7 +3,7 @@
  */
 
 #include "nvs_flash.h"
-
+#include "JoyStick.h"
 #include "wifi_app.h"
 
 void app_main(void)
@@ -19,5 +19,8 @@ void app_main(void)
 
 	// Start Wifi
 	wifi_app_start();
+
+	//Start reading from Joy Stick
+	JoyStick_task_start();
 }
 
